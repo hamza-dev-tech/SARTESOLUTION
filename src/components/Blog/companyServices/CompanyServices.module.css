@@ -1,0 +1,49 @@
+/* src/components/Blog/CompanyServices/CompanyServices.module.css */
+.container {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-top: 1px solid #ddd;
+    margin-top: 10rem;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+
+  .ulist {
+    list-style-type: none;
+    margin: 0;
+    padding-left: 2rem;
+    text-align: center;
+  
+  } 
+
+  
+  .cta {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .cta a {
+    color: var(--third-color);
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .cta .icons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .icon {
+    color: #0070f3;
+    align-items: center;
+    justify-content: center;
+   
+  }
+  

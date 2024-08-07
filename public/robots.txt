@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /private/
+Disallow: /admin/
+
+# Host
+Host: https://www.sartesolution.com
+
+# Sitemaps
+Sitemap: https://www.sartesolution.com/sitemap.xml

@@ -1,0 +1,71 @@
+/* src/components/promotions/Promotions.module.css */
+
+.promotionsContainer {
+    max-height: min-content;
+    overflow-y: auto;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+   
+  }
+  
+  .promotionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .promotionItem {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 10px;
+
+  }
+  
+  .promotionImageContainer {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+  
+  }
+  
+  .promotionText {
+    flex: 1;
+  }
+  
+  .promotionText h3 {
+    margin: 0 0 5px;
+    font-size: 1rem;
+  }
+  
+  .promotionText p {
+    margin: 0 0 5px;
+    font-size: 0.9rem;
+  }
+  
+  .promotionText a {
+    color: #0070f3;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+
+  @media screen and (max-width: 1023px) {
+    .promotionsContainer {
+        max-height: 500px;
+        overflow-y: auto;
+       width: 95%;
+        margin: 0 auto;
+      
+      }
+      .promotionItem{
+        width: 90%;
+      }
+  }
+  
+  
