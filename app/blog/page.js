@@ -76,9 +76,6 @@ export const metadata = {
   },
 };
 
-
-
-
 const Blogs = ({ searchParams }) => {
   const page = parseInt(searchParams.page) || 1;
 

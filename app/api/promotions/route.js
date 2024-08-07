@@ -1,5 +1,3 @@
-// src/pages/api/promotions.js
-
 import prisma from "@/src/utils/connect";
 import { NextResponse } from "next/server";
 
