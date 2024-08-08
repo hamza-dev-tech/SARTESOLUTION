@@ -1,33 +1,40 @@
+"use client"
 import "./Featured.css";
 import Image from "next/image";
 import { htmlToText } from "html-to-text";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 
 
-const getData = async () => {
-  const res = await fetch(`${process.env.NEXTAUTH_URL}/api/featured`, {
-    cache: "no-store",
-  });
+const Featured = () => {
+  
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
+  const [featured, setFeatured] = useState([]);
+ 
 
-  const data = await res.json();
-  return data;
-};
+  useEffect(() => {
+    const fetchPromotions = async () => {
+      try {
+        const response = await axios.get("/api/featured");
+        console.log('API Response:', response.data);
+        setFeatured(response.data);
+      } catch (error) {
+        console.error("Error fetching featured:", error);
+      }
+    };
+  
+    fetchPromotions();
+    const interval = setInterval(fetchPromotions, 10000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  console.log('Featured State:', featured); // Log the state
+  
 
-const Featured = async () => {
-  let data;
 
-  try {
-    data = await getData();
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  }
-
-  const post = data?.posts;
+  const post = featured?.posts;
 
   const description = post?.desc
     ? htmlToText(post.desc, { wordwrap: 130 }).substring(0, 420)

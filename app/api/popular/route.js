@@ -13,7 +13,7 @@ export const GET = async (req) => {
     orderBy: {
       views: 'desc',
     },
-    take: 4,
+    take: 6,
   };
 
   try {
