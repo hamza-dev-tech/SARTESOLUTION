@@ -2,25 +2,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter from 'next/navigation'
 import Image from "next/image";
 import styles from "./promotions.module.css";
 
 const Promotions = () => {
   const [promotions, setPromotions] = useState([]);
-  const [lastFetched, setLastFetched] = useState(Date.now());
-  const router = useRouter();
 
   useEffect(() => {
     const fetchPromotions = async () => {
       try {
+        // Fetch promotions from the API with a cache-busting timestamp
         const response = await fetch(`/api/promotions?_t=${new Date().getTime()}`);
         const data = await response.json();
-
-        // Check if the promotions have changed
-        if (JSON.stringify(promotions) !== JSON.stringify(data.promotions)) {
-          setPromotions(data.promotions);
-        }
+        setPromotions(data.promotions);
       } catch (error) {
         console.error("Failed to fetch promotions:", error);
       }
@@ -29,27 +23,14 @@ const Promotions = () => {
     // Initial fetch
     fetchPromotions();
 
-    // Set up a timer to refetch promotions every minute
+    // Set up an interval to refresh the data every 10 seconds
     const interval = setInterval(() => {
       fetchPromotions();
-    }, 10000); // 60,000 milliseconds = 1 minute
+    }, 10000); // 10,000 milliseconds = 10 seconds
 
+    // Cleanup the interval on component unmount
     return () => clearInterval(interval);
-  }, [promotions]); // Re-run effect when promotions change
-
-  useEffect(() => {
-    // Check if there's any update and refresh the page if necessary
-    const refreshData = () => {
-      const now = Date.now();
-      if (now - lastFetched > 60000) {
-        // Check if it's been more than 1 minute
-        setLastFetched(now);
-        router.refresh(); // Refresh the page using router
-      }
-    };
-
-    refreshData();
-  }, [promotions, lastFetched, router]);
+  }, []); // Empty dependency array ensures this runs once on mount
 
   return (
     <aside className={styles.promotionsContainer}>
