@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import "./Featured.css";
 import Image from "next/image";
 import { htmlToText } from "html-to-text";
@@ -6,35 +7,33 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-
-
 const Featured = () => {
-  
-
   const [featured, setFeatured] = useState([]);
- 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPromotions = async () => {
+    const fetchFeaturedPosts = async () => {
       try {
         const response = await axios.get("/api/featured");
         console.log('API Response:', response.data);
-        setFeatured(response.data);
+        setFeatured(response.data.posts);
       } catch (error) {
-        console.error("Error fetching featured:", error);
+        console.error("Error fetching featured posts:", error);
+      } finally {
+        setLoading(false);
       }
     };
-  
-    fetchPromotions();
-    const interval = setInterval(fetchPromotions, 10000);
+
+    fetchFeaturedPosts();
+    const interval = setInterval(fetchFeaturedPosts, 10000); // Refresh every 10 seconds
     return () => clearInterval(interval);
   }, []);
-  
-  console.log('Featured State:', featured); // Log the state
-  
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-  const post = featured?.posts;
+  const post = featured.length > 0 ? featured[0] : null;
 
   const description = post?.desc
     ? htmlToText(post.desc, { wordwrap: 130 }).substring(0, 420)
