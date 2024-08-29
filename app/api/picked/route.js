@@ -6,7 +6,7 @@ export const GET = async (req) => {
   try {
     const posts = await prisma.post.findMany({
       where: { picked: true },
-      take: 6,
+      take: 4,
     });
 
     return new NextResponse(

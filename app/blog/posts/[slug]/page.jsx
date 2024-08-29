@@ -5,33 +5,10 @@ import Comments from "@/src/components/Blog/comments/Comments";
 import Navbar from "@/src/components/Navbar/Navbar";
 import Footer from "@/src/components/Footer/Footer";
 import Keyword from "@/src/components/Blog/keyword/Keyword";
-import "./page.css";
-import {
-  FaEye,
-  FaFacebook,
-  FaReddit,
-  FaTwitter,
-  FaLinkedin,
-  FaPinterest,
-} from "react-icons/fa";
+import { FaEye, FaFacebook, FaTwitter, FaLinkedin, FaPinterest } from "react-icons/fa";
+import Script from "next/script";
 import CompanyServices from "@/src/components/Blog/companyServices/CompanyServices";
 import { htmlToText } from "html-to-text";
-import PromotionsSinglePage from "@/src/components/promotionssinglepage/PromotionsSinglePage";
-import InfolinksAds from "@/app/InfoLinksAds";
-
-// Function to generate URLs for social media
-const generateShareUrls = (postUrl, encodedTitle, descriptions, hashtags) => {
-  const encodedHashtags = encodeURIComponent(hashtags);
-
-  return {
-    twitter: `https://twitter.com/intent/tweet?url=${postUrl}&text=${descriptions.twitter} ${encodedHashtags}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${postUrl}&quote=${descriptions.facebook} ${encodedHashtags}`,
-    linkedin: `https://www.linkedin.com/shareArticle?url=${postUrl}&title=${encodedTitle}&summary=${descriptions.linkedin} ${encodedHashtags}`,
-    pinterest: `https://www.pinterest.com/pin/create/button/?url=${postUrl}&media=${descriptions.image}&description=${descriptions.pinterest} ${encodedHashtags}`,
-    reddit: `https://www.reddit.com/submit?url=${postUrl}&title=${encodedTitle}&text=${descriptions.reddit} ${encodedHashtags}`,
-  };
-};
-
 
 export async function generateMetadata({ params }) {
   const { slug } = params;
@@ -45,35 +22,29 @@ export async function generateMetadata({ params }) {
   const keywordsData = await fetch(
     `${process.env.NEXTAUTH_URL}/api/keywords?postSlug=${slug}`
   ).then((res) => res.json());
-  const keywords = [
-    ...keywordsData.keywords.map((item) => item.keyword),
-    "Digital Marketing Agency", "AI-Powered Marketing", "Voice Search Optimization",
-    "Video Marketing", "Influencer Marketing", "Content Personalization",
-    "Blockchain Development", "Cybersecurity Solutions", "SaaS Solutions",
-    "Internet of Things (IoT)", "Edge Computing", "Sustainable Practices",
-    "E-commerce Growth", "Remote Work Solutions", "Generative AI", "5G Technology",
-    "Top Digital Marketing Agency USA", "Leading Digital Marketing Agency India",
-    "Best Digital Marketing Company Saudi Arabia", "Top Digital Marketing Agency Dubai",
-    "Leading Digital Marketing Agency Europe", "Top Digital Marketing Agency Pakistan", "Top Software Development Company", "Ai Experts", "Marketing Experts", "Digital World", "Hamza Shabbir", "Top Universities World Wide", "Info about"
-  ];
+  const keywords = keywordsData.keywords.map((item) => item.keyword);
 
   const rawDescription = data.desc?.substring(0, 160) || "";
   const description = htmlToText(rawDescription);
 
   // Ensure the description length is within 55 to 200 characters
   const trimmedDescription =
-    description.length > 250
-      ? description.substring(0, 247) + "..."
+    description.length > 200
+      ? description.substring(0, 197) + "..."
       : description;
   const finalDescription =
     trimmedDescription.length < 55
-      ? trimmedDescription
+      ? "Blog | Sarte Solution"
       : trimmedDescription;
 
   const title = `${data.title} - Sarte Solution Blog`;
 
+  // Ensure the title length is between 30-60 characters
+  const optimizedTitle =
+    title.length > 60 ? title.substring(0, 57) + "..." : title;
+
   return {
-    title: title,
+    title: optimizedTitle,
     description: finalDescription,
     keywords: keywords.join(", "),
     alternates: {
@@ -84,7 +55,7 @@ export async function generateMetadata({ params }) {
     },
     openGraph: {
       type: "article",
-      title: title,
+      title: optimizedTitle,
       description: finalDescription,
       url: `${process.env.NEXTAUTH_URL}/blog/posts/${data.slug}`,
       images: [
@@ -98,7 +69,7 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: title,
+      title: optimizedTitle,
       description: finalDescription,
       image: data.img || "/opengraph-image.png",
     },
@@ -130,19 +101,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-
-
-const dummyPromotions = [
-  {
-    id: "1",
-    title: "SEO Optimization sdjnfj jskdnfckjse",
-    description:
-      "Boost your dsvnjkcejr vejrkv en jc ne jf wen vcwejf cnw ej website ranking with our expert SEO services.",
-    imageUrl: "/images/seo-promotion.jpg",
-    link: "/services/seo-optimization",
-  },
-];
-
 const getData = async (slug) => {
   const res = await fetch(`${process.env.NEXTAUTH_URL}/api/posts/${slug}`, {
     cache: "no-store",
@@ -155,64 +113,42 @@ const getData = async (slug) => {
   return res.json();
 };
 
-// Function to create hashtags from keywords
-const createHashtags = (keywords) => {
-  return keywords.map((keyword) => `#${keyword.replace(/\s+/g, "")}`).join(" ");
-};
-
 const SinglePage = async ({ params }) => {
   const { slug } = params;
   const data = await getData(slug);
 
   const postUrl = `${process.env.NEXTAUTH_URL}/blog/posts/${slug}`;
-  const encodedTitle = encodeURIComponent(data?.title);
-  const fullDescription = htmlToText(data?.desc || "");
-
-  // Fetch keywords for hashtags
-  const keywordsData = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/keywords?postSlug=${slug}`
-  ).then((res) => res.json());
-  const keywords = keywordsData.keywords.map((item) => item.keyword);
-  const hashtags = createHashtags(keywords);
-
-  // Trim descriptions for each platform
-  const descriptions = {
-    twitter: `${fullDescription.substring(
-      0,
-      280 - postUrl.length - hashtags.length - 8
-    )}...`,
-    facebook: `${fullDescription.substring(0, 80)}...`,
-    linkedin: `${fullDescription.substring(0, 200)}...`,
-    pinterest: `${fullDescription.substring(0, 500)}...`,
-    reddit: `${fullDescription.substring(0, 300)}...`,
-    image: data.img || "/opengraph-image.png",
-  };
-
-  // Generate share URLs
-  const shareUrls = generateShareUrls(postUrl, encodedTitle, descriptions, hashtags);
+  const encodedTitle = encodeURIComponent(data.title);
+  const encodedDescription = encodeURIComponent(
+    htmlToText(data.desc || "").substring(0, 200)
+  );
 
   return (
     <>
-      
+      <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5822613719641434" crossorigin="anonymous"></Script>
+      <Script async src="https://www.googletagmanager.com/gtag/js?id=G-170T4531W6"></Script>
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-170T4531W6');
+        `}
+      </Script>
       <Navbar />
 
       <div className={styles.hitwrapper}>
         <div className={styles.container}>
-          <article className={styles.hitcontainer}>
+          <div className={styles.hitcontainer}>
             <div className={styles.infoContainer}>
-              <header className={styles.textContainer}>
-                <h1
-                  style={{ margin: "2rem 0", marginTop: 0 }}
-                  className={styles.title}
-                >
-                  {data?.title}
-                </h1>
+              <div className={styles.textContainer}>
+                <h1 style={{margin:'2rem 0', marginTop:0}} className={styles.title} >{data?.title}</h1>
                 <div className={styles.user}>
                   {data?.user?.image && (
                     <div className={styles.userImageContainer}>
                       <Image
-                        src={data?.user?.image}
-                        alt={data?.user?.name}
+                        src={data.user.image}
+                        alt=""
                         fill
                         className={styles.avatar}
                       />
@@ -230,74 +166,53 @@ const SinglePage = async ({ params }) => {
                 </div>
                 <div className={styles.socialShare}>
                   <a
-                    href={shareUrls.twitter}
+                    href={`https://twitter.com/intent/tweet?url=${postUrl}&text=${encodedTitle}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <FaTwitter size={30} />
                   </a>
                   <a
-                    href={shareUrls.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaFacebook size={30} />
-                  </a>
-                  <a
-                    href={shareUrls.linkedin}
+                    href={`https://www.linkedin.com/shareArticle?url=${postUrl}&title=${encodedTitle}&summary=${encodedDescription}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <FaLinkedin size={30} />
                   </a>
                   <a
-                    href={shareUrls.pinterest}
+                    href={`https://www.pinterest.com/pin/create/button/?url=${postUrl}&media=${data.img}&description=${encodedDescription}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
                     <FaPinterest size={30} />
                   </a>
-                  <a
-                    href={shareUrls.reddit}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <FaReddit size={30} />
-                  </a>
                 </div>
-              </header>
+              </div>
 
               {data?.img && (
                 <div className={styles.imageContainer}>
-                  <Image src={data.img} alt={data.title} fill className={styles.image} />
+                  <Image src={data.img} alt="" fill className={styles.image} />
                 </div>
               )}
             </div>
             <div className={styles.content}>
               <div className={styles.post}>
-                <div className={styles.content2}>
-                  <div
-                    className={styles.description}
-                    dangerouslySetInnerHTML={{ __html: data?.desc }}
-                  />
-                  <div className={styles.childContent}>
-                    <PromotionsSinglePage promotions={dummyPromotions} />
-                    <Menu />
-                  </div>
-                </div>
-                <hr style={{ color: "black", fontWeight: "800" }}></hr>
+                <div
+                  className={styles.description}
+                  dangerouslySetInnerHTML={{ __html: data?.desc }}
+                />
                 <div className={styles.comment}>
                   <Comments postSlug={slug} />
                   <Keyword postSlug={slug} />
                 </div>
               </div>
               <CompanyServices />
+              <Menu />
             </div>
-          </article>
+          </div>
         </div>
       </div>
       <Footer />
-      <InfolinksAds />
     </>
   );
 };

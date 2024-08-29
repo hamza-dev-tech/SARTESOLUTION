@@ -1,39 +1,33 @@
-"use client";
-
 import "./Featured.css";
 import Image from "next/image";
 import { htmlToText } from "html-to-text";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import axios from "axios";
 
-const Featured = () => {
-  const [featured, setFeatured] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchFeaturedPosts = async () => {
-      try {
-        const response = await axios.get("/api/featured");
-        console.log('API Response:', response.data);
-        setFeatured(response.data.posts);
-      } catch (error) {
-        console.error("Error fetching featured posts:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchFeaturedPosts();
-    const interval = setInterval(fetchFeaturedPosts, 10000); // Refresh every 10 seconds
-    return () => clearInterval(interval);
-  }, []);
+const getData = async () => {
+  const res = await fetch(`${process.env.NEXTAUTH_URL}/api/featured`, {
+    cache: "no-store",
+  });
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
   }
 
-  const post = featured.length > 0 ? featured[0] : null;
+  const data = await res.json();
+  return data;
+};
+
+const Featured = async () => {
+  let data;
+
+  try {
+    data = await getData();
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+
+  const post = data?.posts;
 
   const description = post?.desc
     ? htmlToText(post.desc, { wordwrap: 130 }).substring(0, 420)

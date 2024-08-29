@@ -1,10 +1,20 @@
-"use client";
-
+"use client"
 import "./Menu.css";
 import MenuPosts from "../menuPosts/MenuPosts";
 import MenuCategories from "../menuCategories/MenuCategories";
 import { useEffect, useState } from "react";
-import axios from "axios"; // Import axios
+
+const fetchPopularPosts = async () => {
+  const res = await fetch(`/api/popular`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch popular posts");
+  return await res.json();
+};
+
+const fetchPickedPosts = async () => {
+  const res = await fetch(`/api/picked`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch picked posts");
+  return await res.json();
+};
 
 const Menu = () => {
   const [popularPosts, setPopularPosts] = useState([]);
@@ -14,14 +24,10 @@ const Menu = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
-      // Fetch data using axios
-      const popularResponse = await axios.get("/api/popular");
-      const pickedResponse = await axios.get("/api/picked");
-      
-      // Update state with fetched data
-      setPopularPosts(popularResponse.data.posts);
-      setPickedPosts(pickedResponse.data.posts);
+      const popularData = await fetchPopularPosts();
+      const pickedData = await fetchPickedPosts();
+      setPopularPosts(popularData.posts);
+      setPickedPosts(pickedData.posts);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
